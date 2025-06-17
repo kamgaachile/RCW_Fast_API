@@ -8,6 +8,8 @@ from fastapi.middleware.wsgi import WSGIMiddleware
 from  fastapi.templating import Jinja2Templates
 import  uvicorn
 from dash_app import app as dash_app
+import requests
+
 
 #crer lobjet FastAPI
 app = FastAPI()
@@ -30,9 +32,29 @@ app.mount("/dashboard", WSGIMiddleware(app=dash_app.server))
 
 users = {"admin": "123"}
 
+EXTERNAL_URL_API="http://127.0.0.1:8000/info"
+
+def get_external_api_data():
+    try:
+        response= requests.get(EXTERNAL_URL_API)
+        return response.json()
+    except Exception as e :
+        return{
+            "date": "N/A",
+            "time": "N/A",
+            "weather": {
+                "temperature": "N/A",
+                "description": "N/A",
+                "wind_speed": "N/A",
+                "humidity": "N/A"
+            
+            }
+        }
+
 @app.get("/")
 async def home_page(request: Request):
-    return templates.TemplateResponse('home.html', {'request': request})
+    info = get_external_api_data()
+    return templates.TemplateResponse('home.html', {'request': request, 'info': info})
 
 # recupere et affiche le formulaire  login.html
 @app.get("/login")
