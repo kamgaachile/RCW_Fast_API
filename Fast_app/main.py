@@ -56,6 +56,12 @@ async def home_page(request: Request):
     info = get_external_api_data()
     return templates.TemplateResponse('home.html', {'request': request, 'info': info})
 
+
+@app.get("/api/info")
+async def get_info():
+    info = get_external_api_data()
+    return info
+
 # recupere et affiche le formulaire  login.html
 @app.get("/login")
 async def login_page(request: Request):  # ⚠️ renommé ici
